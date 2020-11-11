@@ -20,10 +20,17 @@ testParallel tests = do
     threadJoin threads
 
 threadJoin :: [ThreadId] -> IO ()
-threadJoin [] = return ()
-threadJoin (x:xs) = do
+threadJoin threads =
+    threadJoin' (length threads) threads
+
+threadJoin' :: Int -> [ThreadId] -> IO ()
+threadJoin' testCount [] = putStrLn "All tests complete"
+threadJoin' testCount (x:xs) = do
     status <- threadStatus x
     case status of
-        ThreadFinished -> threadJoin xs
+        ThreadFinished -> do
+            putStrLn $ (show (testCount - length xs)) ++ " of " ++ (show testCount) ++ " tests completed"
+            threadJoin' testCount xs
         ThreadDied -> fail "test thread failed"
-        otherwise -> threadJoin (x:xs)
+        otherwise -> do
+            threadJoin (x:xs)
