@@ -1,11 +1,15 @@
 module Assert where
 
-assertEquals :: Eq b => String -> a -> b -> (a -> b) -> IO Bool
-assertEquals description input expectedOutput fn = do
-    putStrLn ("Assertion test: " ++ description)
-    return (expectedOutput == (fn input))
+assertEquals :: (Show a, Eq a) => String -> a -> a -> IO ()
+assertEquals description expected actual = do
+    if (expected == actual)
+        then return ()
+        else fail ((show expected) ++ " != " ++ (show actual) ++ ": " ++ description ++ " failed")
 
-assertTrue :: String -> a -> (a -> IO b) -> IO b
-assertTrue description input fn = do
-    putStrLn ("Assertion test: " ++ description)
-    fn input
+assertTrue :: String -> Bool -> IO ()
+assertTrue description value = 
+    if value
+        then return ()
+        else fail (description ++ " is not true")
+
+

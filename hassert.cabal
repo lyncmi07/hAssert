@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: edee7127af41ca8e6e5ab46ef29da1941ef17121c1a7f2e755a63eb3e760e5af
+-- hash: 7d7dcc02efe5c8ac1d6378d751bedaed83dd7e4b8d83930b3f8fe0672068b5b3
 
 name:           hassert
 version:        0.1.0.0
@@ -47,6 +47,7 @@ executable hassert-exe
   build-depends:
       base >=4.7 && <5
     , hassert
+    , parallel
   default-language: Haskell2010
 
 test-suite hassert-test
@@ -60,4 +61,5 @@ test-suite hassert-test
   build-depends:
       base >=4.7 && <5
     , hassert
+    , parallel
   default-language: Haskell2010

@@ -35,6 +35,7 @@ executables:
     - -with-rtsopts=-N
     dependencies:
     - hassert
+    - parallel
 
 tests:
   hassert-test:
@@ -46,3 +47,4 @@ tests:
     - -with-rtsopts=-N
     dependencies:
     - hassert
+    - parallel
