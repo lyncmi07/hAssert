@@ -1,7 +1,6 @@
 module Main where
 
 import Assert
-import Lib
 import Control.Parallel
 import Control.Concurrent
 
