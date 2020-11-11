@@ -6,7 +6,8 @@ import Control.Parallel
 import Control.Concurrent
 
 main :: IO ()
-main =
+main = do
+    putStrLn "hello world"
     testParallel [
         assertEquals "Equality test" 10 (10 + 10),
         assertTrue "True test" (10 == (5 + 5)),
