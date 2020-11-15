@@ -7,20 +7,13 @@ import Control.Concurrent
 main :: IO ()
 main = do
     putStrLn "hello world"
-    testParallel [
-        assertEquals "Equality test" 10 (10 + 10),
-        assertTrue "True test" (10 == (5 + 5)),
-        assertTrue "Failing test" False,
-        assertTrue "Failing test" False,
-        assertTrue "Failing test" False,
-        assertTrue "Failing test" False,
-        assertTrue "Failing test" False,
-        assertTrue "Failing test" False,
-        assertTrue "Failing test" False,
-        assertTrue "Failing iiiiitest" (10 == (takeAWhile 10000)),
-        assertTrue "Failing test" False,
-        assertTrue "Failing test" False,
-        assertTrue "Failing test" False]
+
+    runTests [
+            (Test "test1" (assertTrue "This will be true" True)),
+            (Test "test2" (assertTrue "This will be false" False)),
+            (Test "test3" (assertTrue "This will also be true" True)),
+            (Test "test4" (assertEquals "numbers" 1 2))
+        ]
 
 takeAWhile 0 = 100
 takeAWhile a = a + takeAWhile (a - 1)

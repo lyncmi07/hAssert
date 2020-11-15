@@ -1,6 +1,11 @@
-module Assert (assertTrue, assertEquals, testParallel) where
+module Assert (assertTrue, assertEquals, runTests, Test (..)) where
 
-import GHC.Conc
+import Control.Monad
+import Control.Exception
+import System.IO.Error
+
+-- Test description logic
+data Test = Test String (IO ())
 
 assertEquals :: (Show a, Eq a) => String -> a -> a -> IO ()
 assertEquals description expected actual = do
@@ -14,23 +19,25 @@ assertTrue description value =
         then return ()
         else fail (description ++ " is not true")
 
-testParallel :: [IO ()] -> IO ()
-testParallel tests = do
-    threads <- sequence $ map forkIO tests
-    threadJoin threads
+runTests :: [Test] -> IO ()
+runTests [] = putStrLn "All tests passed"
+runTests (t:ts) = do
+        othersDidNotFail <- runTest t (\e -> do
+                    describeFailure t e
+                    runTestsAsFailed ts)
+        if othersDidNotFail
+            then runTests ts
+            else fail "There were test failures"
 
-threadJoin :: [ThreadId] -> IO ()
-threadJoin threads =
-    threadJoin' (length threads) threads
+runTestsAsFailed :: [Test] -> IO Bool
+runTestsAsFailed [] = return False
+runTestsAsFailed (t:ts) = do
+    runTest t (\e -> do describeFailure t e; return True)
+    runTestsAsFailed ts
 
-threadJoin' :: Int -> [ThreadId] -> IO ()
-threadJoin' testCount [] = putStrLn "All tests complete"
-threadJoin' testCount (x:xs) = do
-    status <- threadStatus x
-    case status of
-        ThreadFinished -> do
-            putStrLn $ (show (testCount - length xs)) ++ " of " ++ (show testCount) ++ " tests completed"
-            threadJoin' testCount xs
-        ThreadDied -> fail "test thread failed"
-        otherwise -> do
-            threadJoin (x:xs)
+runTest :: Test -> (IOError -> IO Bool) -> IO Bool
+runTest (Test _ testLogic) errorHandler = catch (do testLogic; return True) errorHandler
+
+describeFailure :: Test -> IOError -> IO ()
+describeFailure (Test description _) testFailure = putStrLn $ "Test " ++ description ++ " failed with " ++ (show $ ioeGetErrorType testFailure) ++ ":" ++ (show $ ioeGetErrorString testFailure)
+
