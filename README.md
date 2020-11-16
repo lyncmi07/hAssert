@@ -7,7 +7,10 @@ A simple testing library
 - Assert value is true
     `assertTrue :: String -> Bool -> IO ()`
 
-- Run IO in parallel and return once all are finished
-    `testParallel :: [IO ()] -> IO ()`
+- Create IO Monad test
+    `Test (description::String) (testLogic::IO())`
+
+- Run multiple tests, writing out failures as they are round
+    `runTests :: [Test] -> IO ()`
 
 include using `import Assert`
